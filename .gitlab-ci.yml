@@ -1,0 +1,28 @@
+# A hook to build the build.
+# - it creates .mobi, .epub and .pdf versions
+# - these are available as a download as build artifacts
+
+image: avastmick/ebook-builder:latest
+
+before_script:
+  - env
+
+stages:
+  - build
+
+ebook:
+  stage: build
+  script:
+    - gitbook mobi ./ ./your-book-$(date +"%m-%d-%y").mobi
+    - gitbook epub ./ ./your-book-$(date +"%m-%d-%y").epub
+    - gitbook pdf ./ ./your-book-$(date +"%m-%d-%y").pdf
+  artifacts:
+    paths:
+      - ./*.mobi
+      - ./*.epub
+      - ./*.pdf
+  only:
+    - draft
+    - tags
+  tags:
+    - shared

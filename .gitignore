@@ -1,0 +1,14 @@
+# Book build output
+
+_book
+
+# eBook build output
+*.epub
+*.mobi
+*.pdf
+
+# Any sublime text conf
+*.sublime*
+
+# Any draft generation
+*draft*
