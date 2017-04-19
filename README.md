@@ -9,6 +9,17 @@ Simple.
 
 ## How to use
 
+The template uses a couple of libraries:
+
+- [Pandoc](http://pandoc.org)
+- [Kindlegen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)
+
+Install those first.
+
+Then clone this repo to your machine. `git clone https://github.com/avastmick/book-template.git`
+
+Boom, you're done!
+
 - Add chapters in the `chapters` directory
 - Add cover art and save as `images/book-cover.jpg`
 - Put all your planning stuff into planning
@@ -23,12 +34,24 @@ Simple.
 - cd to the directory you are saving your book
 - type `./build.sh` and follow the instructions
 
-## Use Gitlab
+## Using Gitlab
 
-Why [Gitlab](http://gitlab.com)? It has free private repositories, you want that, right? Also, it has a free `continuous integration` feature called Pipeline, this can be configured to create your ebooks each time you save you work.
+I use [Gitlab](http://gitlab.com), why? It has free private repositories, you want that if you are writing a novel, right? Also, it has a free `continuous integration` feature called Pipeline, this can be configured to create your ebooks each time you save you work.
 
 - Commit your changes and push up to [Gitlab](http://gitlab.com)
 - Set up a pipeline for building your
 - Check the pipeline for success
 - Download the build artefacts 
 - Read...
+
+## Using GitHub
+
+GitHub is great if you are writing open source books etc. It has more users and a greater potential readership.
+
+I'll post up some information on how this template will work.
+
+## Support this work
+
+If you like what you find here, and or what updates, please send some :love:.
+
+[SEND SOME LOVE](http://www.avastmick.io/donate)
