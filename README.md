@@ -52,6 +52,6 @@ I'll post up some information on how this template will work.
 
 ## Support this work
 
-If you like what you find here, and or what updates, please send some :heart:.
+If you like what you find here, and or what updates, please send some  :heart: .
 
 [SEND SOME LOVE](http://www.avastmick.io/donate)
