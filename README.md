@@ -18,7 +18,7 @@ Install those first.
 
 Then clone this repo to your machine. `git clone https://github.com/avastmick/book-template.git`
 
-Boom, you're done!
+:boom: Boom, you're done!
 
 - Add chapters in the `chapters` directory
 - Add cover art and save as `images/book-cover.jpg`
@@ -52,6 +52,6 @@ I'll post up some information on how this template will work.
 
 ## Support this work
 
-If you like what you find here, and or what updates, please send some :love:.
+If you like what you find here, and or what updates, please send some :heart:.
 
 [SEND SOME LOVE](http://www.avastmick.io/donate)
