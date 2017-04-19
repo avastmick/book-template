@@ -1,6 +1,5 @@
-# Book build output
-
-_book
+# Editing
+editing
 
 # eBook build output
 *.epub
@@ -12,3 +11,7 @@ _book
 
 # Any draft generation
 *draft*
+
+# Any non-buildable items
+*.xlsx
+Thumbs.db

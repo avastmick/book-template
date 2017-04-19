@@ -2,27 +2,26 @@
 # - it creates .mobi, .epub and .pdf versions
 # - these are available as a download as build artifacts
 
-image: avastmick/ebook-builder:latest
+image: avastmick/ebook-builder:pandoc
 
 before_script:
   - env
 
-stages:
-  - build
-
-ebook:
+draft-job:
   stage: build
   script:
-    - gitbook mobi ./ ./your-book-$(date +"%m-%d-%y").mobi
-    - gitbook epub ./ ./your-book-$(date +"%m-%d-%y").epub
-    - gitbook pdf ./ ./your-book-$(date +"%m-%d-%y").pdf
+    - pandoc -S --toc-depth=1 -o draft-$(date +"%m-%d-%y").epub publish/epub-frontmatter.md chapters/*.md
+    - pandoc -S --toc-depth=1 -o draft-$(date +"%m-%d-%y").pdf chapters/*.md
+    - pandoc -S --toc-depth=1 -o draft-$(date +"%m-%d-%y").docx chapters/*.md
+    - kindlegen *.epub
   artifacts:
     paths:
       - ./*.mobi
       - ./*.epub
       - ./*.pdf
+      - ./*.docx
   only:
-    - draft
     - tags
+    - draft
   tags:
     - shared

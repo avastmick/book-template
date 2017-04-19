@@ -10,13 +10,25 @@ Simple.
 ## How to use
 
 - Add chapters in the `chapters` directory
-- Add the chapters into the `SUMMARY.md` file
-- Add cover art and save as `cover.jpg`
+- Add cover art and save as `images/book-cover.jpg`
 - Put all your planning stuff into planning
 - Write away...
-- Fill in the [`book.json`](book.json)
-- Fill in the [`gitlab-ci.yml`](gitlab-ci.yml), if you are using [Gitlab](http://gitlab.com)
+    + Add a synopsis set into the `synopsis` folder
+    + Add chapters into the `chapters` folder
+    + Modify the files in the `publish` folder to suit (see the files there for guidance)
+
+## Use locally
+
+- Open a terminal
+- cd to the directory you are saving your book
+- type `./build.sh` and follow the instructions
+
+## Use Gitlab
+
+Why [Gitlab](http://gitlab.com)? It has free private repositories, you want that, right? Also, it has a free `continuous integration` feature called Pipeline, this can be configured to create your ebooks each time you save you work.
+
 - Commit your changes and push up to [Gitlab](http://gitlab.com)
+- Set up a pipeline for building your
 - Check the pipeline for success
 - Download the build artefacts 
 - Read...
