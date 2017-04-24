@@ -14,6 +14,31 @@ def loadConfig():
     with open(CONFIG_FILE, 'r') as ymlfile:
         cfg = yaml.load(ymlfile)
 
+def mobi(_chapters):
+    print("Output to mobi (Kindle) format, number of chapters: "+_chapters)
+    if not path.exists(cfg['draftDir']):
+        mkdir(cfg['draftDir'])
+    # Find the epub and convert
+    epubfound = False
+    for dirname, dirnames, filenames in walk(cfg['draftDir']):
+        for filename in filenames:
+            if filename.endswith('.epub'):
+                epubfound = True
+                print("Got epub file to convert: "+filename)
+                break
+    if not epubfound:
+        epub(_chapters)
+
+    args = 'kindlegen '+join('.',cfg['draftDir'],"*.epub")
+    print("Converting .epub...")
+    try:
+        call(args.split())
+    except:
+        print("Kindlegen not found or not functioning. Is it installed?")
+        exit(-1)
+    print("...done.")
+    print("Published book as .mobi")    
+
 def epub(_chapters):
     print("Output to epub format, number of chapters: "+_chapters)
     if not path.exists(cfg['draftDir']):
@@ -36,15 +61,17 @@ def epub(_chapters):
     date = datetime.date.today()
     fileName = join(cfg['draftDir'],cfg['book-name']+'-draft-'+str(date)+'.epub ')
 
-    pandocCmd = 'pandoc -S --toc-depth=1 -o '+fileName+fileListStr
-    args = shlex.split(pandocCmd)
-
-    call(args)
+    args = 'pandoc -S --toc-depth=1 -o '+fileName+' '+fileListStr
+    try:
+        call(args.split())
+    except:
+        print("Pandoc not found or not functioning. Is it installed?")
+        exit(-1)
 
     print("Published book as: "+fileName)
 
 def web(_chapters):
-
+    mobi(_chapters)
     print("Publish to web location, number of chapters: "+_chapters)
     # Create a tmp dir
     if not path.exists(cfg['draftDir']):
@@ -63,7 +90,7 @@ def web(_chapters):
     if _chapters != 'all':
         fileList = fileList[0:int(_chapters)]
 
-    print "Publishing as epub the following: "+str(fileList) 
+    print "Publishing to web location the following: "+str(fileList) 
     # Loop over files to be created
     filecount = 0
     for filename in fileList:
@@ -103,8 +130,15 @@ def web(_chapters):
     # mv the files to the web location
     for dirname, dirnames, filenames in walk(cfg['draftDir']):
         for filename in filenames:
-            if cfg['ext'] in filename.lower():
-                rename(join(dirname, filename),join(cfg['webLocation'],filename)) 
+            if filename.endswith(cfg['ext']):
+                rename(join(dirname, filename),join(cfg['webLocation'],filename))
+                print("Published to web: "+join(cfg['webLocation'],filename))
+            elif filename.endswith('.epub'):
+                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+'-'+"chapters-1-"+str(filecount-1)+".epub")) 
+                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+'-'+"chapters-1-"+str(filecount-1)+".epub"))
+            elif filename.endswith('.mobi'):
+                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+'-'+"chapters-1-"+str(filecount-1)+".mobi")) 
+                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+'-'+"chapters-1-"+str(filecount-1)+".mobi"))                
 
 def word(_chapters):
     print("Output to MS Word format, number of chapters: "+_chapters)
@@ -127,17 +161,19 @@ def word(_chapters):
     date = datetime.date.today()
     fileName = join(cfg['draftDir'],cfg['book-name']+'-draft-'+str(date)+'.docx ')
 
-    pandocCmd = 'pandoc -S --toc-depth=1 -o '+fileName+fileListStr
-    args = shlex.split(pandocCmd)
-
-    call(args)
+    args = 'pandoc -S --toc-depth=1 -o '+fileName+' '+fileListStr
+    try:
+        call(args.split())
+    except:
+        print("Pandoc not found or not functioning. Is it installed?")
+        exit(-1)
 
     print("Published book as: "+fileName)
 
 # Handle input and pass to publish functions
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Publishes book content to multiple formats")
-    parser.add_argument('format', help="The format to output (default: %(default)s)", nargs='?', choices=["epub", "word", "web"], default="epub")
+    parser.add_argument('format', help="The format to output (default: %(default)s)", nargs='?', choices=["epub", "mobi", "word", "web"], default="epub")
     parser.add_argument('chapters', help="Number of chapters (e.g. 5, or \"all\") (default: %(default)s)", nargs='?', default="all")
 
     args = parser.parse_args()
@@ -145,6 +181,9 @@ if __name__ == '__main__':
     if args.format == "epub":
         loadConfig()
         epub(args.chapters)
+    elif args.format == "mobi":
+        loadConfig()
+        mobi(args.chapters)
     elif args.format == "word":
         loadConfig()
         word(args.chapters)
