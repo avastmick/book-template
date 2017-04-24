@@ -100,7 +100,7 @@ def web(_chapters):
         if filecount == 0:
             chapter = fm.substitute(FILENAME=cfg['firstFile'], TIMESTAMP='00:0'+str(filecount+1)+':0'+str(filecount+1))
         else:
-            chapter = fm.substitute(FILENAME=cfg['fileNameBase']+'-'+str(filecount), TIMESTAMP='00:0'+str(filecount+1)+':0'+str(filecount+1))
+            chapter = fm.substitute(FILENAME=cfg['fileNameBase']+' '+str(filecount), TIMESTAMP='00:0'+str(filecount+1)+':0'+str(filecount+1))
         # concat
         with open(filename, 'r') as chaptfile:
             chapter += chaptfile.read()  
@@ -118,7 +118,7 @@ def web(_chapters):
         # increment counter
         filecount += 1
     # Add end matter chapter
-    chapter = fm.substitute(FILENAME=cfg['fileNameBase']+'-'+str(filecount), TIMESTAMP='00:0'+str(filecount+1)+':0'+str(filecount+1))
+    chapter = fm.substitute(FILENAME=cfg['fileNameBase']+' '+str(filecount), TIMESTAMP='00:0'+str(filecount+1)+':0'+str(filecount+1))
     with open(join(cfg['publishDir'],cfg['web-endmatter']), 'r') as chaptfile:
         chapter += chaptfile.read() 
         chaptfile.close()
