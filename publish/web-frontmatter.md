@@ -1,10 +1,11 @@
 +++
-title = "YOUR BOOK TITLE HERE"
-description = "One-line blurb"
+title = "YOUR BOOK"
+linktitle = "$FILENAME"
+description = "$FILENAME"
 author = "YOUR NAME"
-date = "2017-04-30"
+date = "2017-04-30T$TIMESTAMP"
 type = "book"
-images = ["where-your-imaeg-is"]
+images = ["where-your-image-is"]
 bookcontents = "true"
 draft = "true"
 

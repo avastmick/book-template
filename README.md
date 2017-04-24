@@ -32,7 +32,7 @@ Then clone this repo to your machine. `git clone https://github.com/avastmick/bo
 
 - Open a terminal
 - cd to the directory you are saving your book
-- type `./build.sh` and follow the instructions
+- type `./Publish.py` and follow the instructions
 
 ## Using Gitlab
 
