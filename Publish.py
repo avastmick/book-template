@@ -47,21 +47,20 @@ def epub(_chapters):
     fileList = [join(cfg['publishDir'],cfg['epub-frontmatter'])]
 
     for dirname, dirnames, filenames in walk(cfg['sourceDir']):
-        for filename in filenames:
+        for counter, filename in enumerate(filenames):
+            if _chapters != 'all': 
+                if int(counter) == int(_chapters):
+                    break
             fileList += [(join(dirname, filename))]
 
-    fileListStr = ""
-    if _chapters == 'all':
-        fileListStr += ' '.join(fileList)
-    else: # note: add '1' to slice to take into account frontmatter
-        fileListStr += ' '.join(fileList[0:int(_chapters)+1])
+    fileList += [join(cfg['publishDir'],cfg['epub-endmatter'])]
 
-    print "Publishing as epub the following: "+fileListStr
+    print "Publishing as epub the following: "+' '.join(fileList)
 
     date = datetime.date.today()
     fileName = join(cfg['draftDir'],cfg['book-name']+'-draft-'+str(date)+'.epub ')
 
-    args = 'pandoc -S --toc-depth=1 -o '+fileName+' '+fileListStr
+    args = 'pandoc -S --toc-depth=1 -o '+fileName+' '+' '.join(fileList)
     try:
         call(args.split())
     except:
@@ -70,6 +69,7 @@ def epub(_chapters):
 
     print("Published book as: "+fileName)
 
+# TODO: Delete all files in the web publish location
 def web(_chapters):
     mobi(_chapters)
     print("Publish to web location, number of chapters: "+_chapters)
@@ -118,7 +118,7 @@ def web(_chapters):
         # increment counter
         filecount += 1
     # Add end matter chapter
-    chapter = fm.substitute(FILENAME=cfg['fileNameBase']+' '+str(filecount), TIMESTAMP='00:0'+str(filecount+1)+':0'+str(filecount+1))
+    chapter = fm.substitute(FILENAME=cfg['endmatter-title'], TIMESTAMP='00:0'+str(filecount+1)+':0'+str(filecount+1))
     with open(join(cfg['publishDir'],cfg['web-endmatter']), 'r') as chaptfile:
         chapter += chaptfile.read() 
         chaptfile.close()
@@ -134,34 +134,25 @@ def web(_chapters):
                 rename(join(dirname, filename),join(cfg['webLocation'],filename))
                 print("Published to web: "+join(cfg['webLocation'],filename))
             elif filename.endswith('.epub'):
-                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+'-'+"chapters-1-"+str(filecount-1)+".epub")) 
-                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+'-'+"chapters-1-"+str(filecount-1)+".epub"))
+                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+".epub")) 
+                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+".epub"))
             elif filename.endswith('.mobi'):
-                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+'-'+"chapters-1-"+str(filecount-1)+".mobi")) 
-                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+'-'+"chapters-1-"+str(filecount-1)+".mobi"))                
+                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+".mobi")) 
+                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+".mobi"))                
 
 def word(_chapters):
     print("Output to MS Word format, number of chapters: "+_chapters)
-    if not path.exists(cfg['draftDir']):
-        mkdir(cfg['draftDir'])
-
-    fileList = []
-    for dirname, dirnames, filenames in walk(cfg['sourceDir']):
+    # Create epub and use calibre ebook-convert to create docx
+    epub(_chapters)
+    epubFilename = ''
+    for dirname, dirnames, filenames in walk(cfg['draftDir']):
         for filename in filenames:
-            fileList += [(join(dirname, filename))]
+            if filename.endswith('epub'):
+                epubFilename = filename
+                break
+    fileName = join(cfg['draftDir'],epubFilename.split('.')[0]+'.docx')
 
-    fileListStr = ""
-    if _chapters == 'all':
-        fileListStr += ' '.join(fileList)
-    else: # note: add '1' to slice to take into account frontmatter
-        fileListStr += ' '.join(fileList[0:int(_chapters)+1])
-
-    print "Publishing as epub the following: "+fileListStr
-
-    date = datetime.date.today()
-    fileName = join(cfg['draftDir'],cfg['book-name']+'-draft-'+str(date)+'.docx ')
-
-    args = 'pandoc -S --toc-depth=1 -o '+fileName+' '+fileListStr
+    args = 'ebook-convert '+join(cfg['draftDir'],epubFilename)+' '+fileName
     try:
         call(args.split())
     except:
@@ -170,6 +161,7 @@ def word(_chapters):
 
     print("Published book as: "+fileName)
 
+# TODO: - Add PDF generator
 # Handle input and pass to publish functions
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Publishes book content to multiple formats")

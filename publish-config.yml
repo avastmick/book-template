@@ -6,14 +6,17 @@ ext: .md
 
 # epub
 epub-frontmatter: epub-frontmatter.md
+epub-endmatter: epub-endmatter.md
+epub-ext: .epub
 
 #  web
 draftDir: draft
-webLocation: "Path to your web directory"
+webLocation: "where you publish your book to locally"
 web-frontmatter: web-frontmatter.md
 web-endmatter: web-endmatter.md
-firstFile: "Prologue"
-fileNameBase: "Chapter"
+firstFile: prologue
+fileNameBase: chapter
+endmatter-title: "Read More..."
 
 #  Do not change!
 publishDir: publish
