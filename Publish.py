@@ -14,6 +14,20 @@ def loadConfig():
     with open(CONFIG_FILE, 'r') as ymlfile:
         cfg = yaml.load(ymlfile)
 
+def publish():
+    # mv the files to the web location
+    for dirname, dirnames, filenames in walk(cfg['draftDir']):
+        for filename in filenames:
+            if filename.endswith(cfg['ext']):
+                rename(join(dirname, filename),join(cfg['webLocation'],filename))
+                print("Published to web: "+join(cfg['webLocation'],filename))
+            elif filename.endswith('.epub'):
+                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+".epub")) 
+                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+".epub"))
+            elif filename.endswith('.mobi'):
+                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+".mobi")) 
+                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+".mobi"))    
+
 def mobi(_chapters):
     print("Output to mobi (Kindle) format, number of chapters: "+_chapters)
     if not path.exists(cfg['draftDir']):
@@ -70,9 +84,24 @@ def epub(_chapters):
     print("Published book as: "+fileName)
 
 # TODO: Delete all files in the web publish location
+# TODO: Select single chapters
+# add range - so 1:2 will publish markdown chapters 1 and 2
+#             4:5 will publish only markdown chapters 4 and 5
+#             The call to mobi (and epub) will send all chapters - so 4:5 will send to mobi() highest chapter (in this case, 5)
 def web(_chapters):
-    mobi(_chapters)
-    print("Publish to web location, number of chapters: "+_chapters)
+    # Split the param and take the highest number to pass through.
+    chapts = _chapters.split(':')
+    mobi(chapts[-1]) # Send the last element
+
+    firstChapt = 0
+    lastChapt = 0
+    if len(chapts) != 1:
+        firstChapt = int(chapts[0])
+        lastChapt = int(chapts[1])
+    else:
+        lastChapt = int(chapts[0])
+
+    print("Publish to web location, chapters: "+str(firstChapt)+" to "+str(lastChapt))
     # Create a tmp dir
     if not path.exists(cfg['draftDir']):
         mkdir(cfg['draftDir'])
@@ -86,13 +115,14 @@ def web(_chapters):
     for dirname, dirnames, filenames in walk(cfg['sourceDir']):
         for filename in filenames:
             fileList += [(join(dirname, filename))] 
+
     # Trim according to num chapters
     if _chapters != 'all':
-        fileList = fileList[0:int(_chapters)]
+        fileList = fileList[firstChapt:lastChapt+1]
 
     print "Publishing to web location the following: "+str(fileList) 
     # Loop over files to be created
-    filecount = 0
+    filecount = firstChapt
     for filename in fileList:
         chapter = ""
         # overwrite values in frontmatter str 
@@ -105,15 +135,18 @@ def web(_chapters):
         with open(filename, 'r') as chaptfile:
             chapter += chaptfile.read()  
             chaptfile.close()
-        # write out chapter file
+        # TODO: Fix horrible hack - write out chapter file 
         chaptname = ""
         if filecount == 0:
             chaptname = cfg['firstFile']+cfg['ext']
+            chaptfile = open(join(cfg['draftDir'],chaptname), "w")
+            chaptfile.write(chapter)
+            chaptfile.close()
         else:
             chaptname = cfg['fileNameBase']+'-'+str(filecount)+cfg['ext']
-        chaptfile = open(join(cfg['draftDir'],chaptname), "w")
-        chaptfile.write(chapter)
-        chaptfile.close()
+            chaptfile = open(join(cfg['draftDir'],chaptname), "w")
+            chaptfile.write(chapter)
+            chaptfile.close()
 
         # increment counter
         filecount += 1
@@ -127,18 +160,8 @@ def web(_chapters):
     chaptfile = open(chaptfileStr, "w")
     chaptfile.write(chapter)
     chaptfile.close()
-    # mv the files to the web location
-    for dirname, dirnames, filenames in walk(cfg['draftDir']):
-        for filename in filenames:
-            if filename.endswith(cfg['ext']):
-                rename(join(dirname, filename),join(cfg['webLocation'],filename))
-                print("Published to web: "+join(cfg['webLocation'],filename))
-            elif filename.endswith('.epub'):
-                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+".epub")) 
-                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+".epub"))
-            elif filename.endswith('.mobi'):
-                rename(join(dirname, filename),join(cfg['webLocation'],cfg['book-name']+".mobi")) 
-                print("Published to web: "+join(cfg['webLocation'],cfg['book-name']+".mobi"))                
+    
+    publish()
 
 def word(_chapters):
     print("Output to MS Word format, number of chapters: "+_chapters)
@@ -166,7 +189,7 @@ def word(_chapters):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Publishes book content to multiple formats")
     parser.add_argument('format', help="The format to output (default: %(default)s)", nargs='?', choices=["epub", "mobi", "word", "web"], default="epub")
-    parser.add_argument('chapters', help="Number of chapters (e.g. 5, or \"all\") (default: %(default)s)", nargs='?', default="all")
+    parser.add_argument('chapters', help="Number of chapters (e.g. 5, , or a range, 4:5 gives only 4 and 5 (web only) or \"all\") (default: %(default)s)", nargs='?', default="all")
 
     args = parser.parse_args()
 
