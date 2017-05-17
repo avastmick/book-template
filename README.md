@@ -34,7 +34,7 @@ Then clone this repo to your machine. `git clone https://github.com/avastmick/bo
 
 - Install python (should be good to go on Linux or MacOS)
 - Install [Pandoc](http://pandoc.org)
-- Install [Kindlegen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211)Pg and ensure you can get to it from your `$PATH`
+- Install [Kindlegen](https://www.amazon.com/gp/feature.html?ie=UTF8&docId=1000765211) and ensure you can get to it from your `$PATH`
 
 ### Usage
 - Open a terminal
