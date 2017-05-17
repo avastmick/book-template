@@ -1,16 +1,8 @@
 # Editing
 editing
 
-# eBook build output
-*.epub
-*.mobi
-*.pdf
-
 # Any sublime text conf
 *.sublime*
-
-# Any draft generation
-*draft*
 
 # Any non-buildable items
 *.xlsx
